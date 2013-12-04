@@ -1,0 +1,81 @@
+That Rabbit Game 2: Stone Age Rabbit Hunt
+=========================================
+
+Copyright (C) 2010, 2011, 2012, 2013 Thomas Perl <m@thp.io>
+License: GNU General Public License, version 3 or later
+http://thp.io/2011/trg2/
+
+
+You are still a kleptomanic rabbit head with wings. And in great danger of
+becoming extinct. After stealing the precious gold coins from a dinosaur (it's
+a T-Rex!), you fly over small hills and have the sudden urge to get shot and
+lose your coins while avoiding death by stone or arrow.
+
+Not to be confused with That Rabbit Game 1.
+
+
+About
+-----
+
+This is the pure C++/OpenGL port of That Rabbit Game, also known as "Stone
+Age Rabbit Hunt". The original version of this game has been developed in
+the summer term 2010 at TU Vienna[1], where it has been called Mire Rabbit.
+Since then, there has been a port of the game to C++/Qt (QGraphicsView),
+which made the game a standalone release for multiple platforms[2]. Or to
+quote the website: "Ports of That Rabbit Game exist for Maemo 5 (N900),
+MeeGo 1.2 (N950, N9), Symbian^3 (N8-00, E7-00) and Symbian Anna/Belle
+(808 PureView), HP/palm webOS (Palm Pre 2), MeeGo Tablet UX (ExoPC), iOS 5
+(iPod Touch 4G) and for QNX (Blackberry Playbook OS, BB 10)".
+
+Given the fact that this code has been ported from at least three different
+languages / toolkit combinations (Java, C++ with Qt, pure C++), the code
+has a strange layout (e.g. GameThread isn't really a thread, getters and
+setters everywhere where public members would have been okay, etc..). Some
+parts of the code (notably for-loops that used iterators before) have been
+updated to C++11, I'm sure there's more that can be done in this area.
+
+Some features that were part of the original Qt version (such as sounds)
+have been removed from this open source release, as the playback code has
+not been implemented; all the sound hooks are still in there, so it's just
+a matter of adding sounds and playing them at the right time.
+
+Incomplete features for which some parts are already prepared: Different
+levels with increasing difficulty (number of rocks that are thrown), more
+dangerous flying things such as arrows (graphics exist, but no code) that
+can it the rabbit head from the side, saving and loading of scores, etc..
+
+This open source release includes the Android port of That Rabbit Game 2!
+The Android port shows how to do a simple OpenGL ES game with touch and
+accelerometer input, and has been used before as an example for apkenv[3],
+a compatibility layer for running native Android apps without Dalvik.
+
+
+[1] http://code.google.com/p/cgmd2010/
+[2] http://thp.io/2010/trg/
+[3] http://thp.io/2012/apkenv/
+
+
+Build requirements
+------------------
+
+ - CMake
+ - xxd (usually installed with vim)
+ - A C++11-capable compiler
+
+ - SDL 1.2
+ - OpenGL
+
+For building the Android version, the Android SDK and NDK are required.
+
+
+Compiling and running
+---------------------
+
+Standard cmake configure/make steps apply here:
+
+  mkdir build
+  cd build
+  cmake ..
+  make
+  ./trg2
+
