@@ -23,7 +23,7 @@
 #include "textrenderer.h"
 
 
-Text::Text(char *text)
+Text::Text(const char *text)
     : Sprite(new TexturePart(TextRenderer(text).texture()))
 {
 }
@@ -34,7 +34,7 @@ Text::~Text()
 }
 
 void
-Text::set(char *text)
+Text::set(const char *text)
 {
     Texture *texture = getTexturePart()->getTexture();
     texture->updateFromData(TextRenderer(text).render(), true);
