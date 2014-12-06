@@ -28,9 +28,9 @@
 class Text : public Sprite
 {
 public:
-    Text(char *text);
+    Text(const char *text);
     ~Text();
-    void set(char *text);
+    void set(const char *text);
 };
 
 #endif /* TRG_TEXT_H */
