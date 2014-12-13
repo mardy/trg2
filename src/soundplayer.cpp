@@ -20,11 +20,16 @@
 
 #include "soundplayer.h"
 
+#include <stdlib.h>
 
 SoundPlayer *
 SoundPlayer::instance = NULL;
 
+#ifndef USE_SDL_MIXER
+/* Provide stub implementations */
+
 SoundPlayer::SoundPlayer()
+    : impl(0)
 {
 }
 
@@ -60,6 +65,8 @@ SoundPlayer::stopMusic()
         /* TODO: Stop music */
     }
 }
+
+#endif // USE_SDL_MIXER
 
 SoundPlayer*
 SoundPlayer::getInstance()
