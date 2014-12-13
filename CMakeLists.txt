@@ -44,10 +44,23 @@ add_custom_command(
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/data/l44_texture.png
 )
 
+file(GLOB SOUNDS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/data/sounds" "${CMAKE_CURRENT_SOURCE_DIR}/data/sounds/*")
+foreach(sound ${SOUNDS})
+    string(REPLACE "." "_" resource ${sound})
+    set(resource "resource-${resource}.c")
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${resource}
+        COMMAND xxd -i ${CMAKE_CURRENT_SOURCE_DIR}/data/sounds/${sound} |
+                sed -e 's@'`echo ${CMAKE_CURRENT_SOURCE_DIR}/data/sounds |
+                sed -e 's@/@_@g'`'_@resource_@' >${CMAKE_CURRENT_BINARY_DIR}/${resource}
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/data/sounds/${sound}
+    )
+    list(APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/${resource}")
+endforeach()
+
 # We need SDL 1.2 for this to build
 find_package(SDL REQUIRED)
 include_directories(${SDL_INCLUDE_DIR})
-
 
 # Platform-specific build of the main executable
 IF(APPLE)
@@ -62,4 +75,11 @@ ELSE()
 
     add_executable(trg2 ${SOURCES})
     target_link_libraries(trg2 ${SDL_LIBRARY} ${OPENGL})
+ENDIF()
+
+find_package(SDL_mixer)
+IF(SDL_MIXER_FOUND)
+    include_directories(${SDL_MIXER_INCLUDE_DIRS})
+    target_link_libraries(trg2 ${SDL_MIXER_LIBRARIES})
+    add_definitions(-DUSE_SDL_MIXER)
 ENDIF()
