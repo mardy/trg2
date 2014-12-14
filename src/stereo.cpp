@@ -23,3 +23,4 @@
 
 int eye_offset = 0;
 bool stereo_enabled = false;
+bool stereo_anaglyph = false;

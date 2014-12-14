@@ -35,9 +35,12 @@ main(int argc, char *argv[])
     for (int i=1; i<argc; i++) {
         if (strcmp(argv[i], "--stereo") == 0) {
             stereo_enabled = true;
+        } else if (strcmp(argv[i], "--anaglyph") == 0) {
+            stereo_anaglyph = true;
         } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-            fprintf(stderr, "Usage: %s [--stereo]\n\n", argv[0]);
+            fprintf(stderr, "Usage: %s [--stereo|--anaglyph]\n\n", argv[0]);
             fprintf(stderr, "    --stereo ...... Render in side-by-side stereo 3D\n");
+            fprintf(stderr, "    --anaglyph .... Render in anaglyph stereo 3D\n");
             return 1;
         }
     }

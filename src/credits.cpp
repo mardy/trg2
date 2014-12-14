@@ -65,7 +65,7 @@ void
 Credits::onBeforeDraw()
 {
     m_current_frame++;
-    if (m_current_frame >= FRAMES_PER_STEP) {
+    if (m_current_frame >= ((stereo_enabled || stereo_anaglyph) ? FRAMES_PER_STEP * 2 : FRAMES_PER_STEP)) {
         m_current_frame = 0;
 
         m_current_step++;
@@ -83,11 +83,14 @@ Credits::onBeforeDraw()
 
     const float SCALE = 2.0;
     if (m_current_step < 20) {
+        m_text.setDistance(SCALE * 0.05 * m_current_step);
         m_text.setScale(SCALE * 0.05 * m_current_step);
     } else if (m_current_step < 80) {
         m_text.setScale(SCALE);
+        m_text.setDistance(SCALE * 1.f);
     } else {
         m_text.setScale(SCALE * 0.05 * (100-m_current_step));
+        m_text.setDistance(SCALE * 0.05 * (100-m_current_step));
     }
     m_text.setOpacity(getOpacity());
     m_text.setPosition(m_width / 2 + 50 - m_current_step, m_height / 2 - 30);

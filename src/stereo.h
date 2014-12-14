@@ -23,5 +23,6 @@
 
 extern int eye_offset;
 extern bool stereo_enabled;
+extern bool stereo_anaglyph;
 
 #endif /* TRG_STEREO_H */

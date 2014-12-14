@@ -151,18 +151,36 @@ GameScene::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if (stereo_enabled) {
+    if (stereo_enabled || stereo_anaglyph) {
+        GLboolean write[4];
+
+        if (stereo_anaglyph) {
+            glGetBooleanv(GL_COLOR_WRITEMASK, write);
+        }
+
         /* Paint left eye view */
-        glViewport(0, 0, viewport_width/2, viewport_height);
-        eye_offset = -4;
+        if (stereo_anaglyph) {
+            glColorMask(GL_TRUE, GL_FALSE, GL_FALSE, GL_TRUE);
+        } else {
+            glViewport(0, 0, viewport_width/2, viewport_height);
+        }
+        eye_offset = -1;
         landscape->reposition();
         paintSingle();
 
         /* Paint right eye view */
-        glViewport(viewport_width/2, 0, viewport_width/2, viewport_height);
-        eye_offset = 4;
+        if (stereo_anaglyph) {
+            glColorMask(GL_FALSE, GL_TRUE, GL_TRUE, GL_TRUE);
+        } else {
+            glViewport(viewport_width/2, 0, viewport_width/2, viewport_height);
+        }
+        eye_offset = 1;
         landscape->reposition();
         paintSingle();
+
+        if (stereo_anaglyph) {
+            glColorMask(write[0], write[1], write[2], write[3]);
+        }
     } else {
         glViewport(0, 0, viewport_width, viewport_height);
         eye_offset = 0;
