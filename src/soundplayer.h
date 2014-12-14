@@ -21,10 +21,7 @@
 #ifndef TRG_SOUNDPLAYER_H
 #define TRG_SOUNDPLAYER_H
 
-#include <map>
-#include <string>
-
-
+class SoundPlayerImpl;
 class SoundPlayer {
 public:
     enum SoundEffect {
@@ -40,11 +37,8 @@ public:
     static void stopMusic();
 
 private:
-
+    SoundPlayerImpl *impl;
     static SoundPlayer *instance;
-
-    std::string musicFilename;
-    std::map<SoundEffect, std::string> fileNames;
 
     SoundPlayer();
 };
