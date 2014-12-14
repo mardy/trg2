@@ -21,7 +21,8 @@
 #ifndef TRG_SOUNDPLAYER_H
 #define TRG_SOUNDPLAYER_H
 
-class SoundPlayerImpl;
+#include <stdlib.h>
+
 class SoundPlayer {
 public:
     enum SoundEffect {
@@ -29,18 +30,26 @@ public:
         DAMN0, DAMN1, LAUGH0, LAUGH1, WTF0, WTF1, EFFECT_COUNT
     };
 
-    static SoundPlayer *getInstance();
-
     static void play(SoundEffect sound, float position);
 
     static void startMusic();
     static void stopMusic();
+};
+
+class SoundPlayerImplPriv;
+
+class SoundPlayerImpl {
+public:
+    SoundPlayerImpl();
+    ~SoundPlayerImpl();
+
+    void load(enum SoundPlayer::SoundEffect effect, const char *data, size_t len);
+    void load_music(const char *data, size_t len);
+    void play(enum SoundPlayer::SoundEffect effect);
+    void music(bool playing);
 
 private:
-    SoundPlayerImpl *impl;
-    static SoundPlayer *instance;
-
-    SoundPlayer();
+    SoundPlayerImplPriv *priv;
 };
 
 #endif /* TRG_SOUNDPLAYER_H */

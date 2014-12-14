@@ -24,109 +24,86 @@
 
 #include <SDL_mixer.h>
 
-#define DECLARE_RESOURCE(name) \
-    extern unsigned char resource_ ## name; \
-    extern unsigned int resource_ ## name ##_len;
 
-DECLARE_RESOURCE(shot_wav)
-DECLARE_RESOURCE(flap_wav)
-DECLARE_RESOURCE(load_wav)
-DECLARE_RESOURCE(beep_wav)
-DECLARE_RESOURCE(end_wav)
-DECLARE_RESOURCE(damn0_wav)
-DECLARE_RESOURCE(damn1_wav)
-DECLARE_RESOURCE(laugh0_wav)
-DECLARE_RESOURCE(laugh1_wav)
-DECLARE_RESOURCE(wtf0_wav)
-DECLARE_RESOURCE(wtf1_wav)
-DECLARE_RESOURCE(baalcrap_it)
-
-class SoundPlayerImpl {
+class SoundPlayerImplPriv {
 public:
-    SoundPlayerImpl();
+    SoundPlayerImplPriv();
 
     Mix_Chunk *sounds[SoundPlayer::EFFECT_COUNT];
     Mix_Music *music;
 };
 
-SoundPlayerImpl::SoundPlayerImpl()
+SoundPlayerImplPriv::SoundPlayerImplPriv()
+    : sounds()
+    , music(0)
 {
-    Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
-#define LoadWAVFromMem(mem) Mix_LoadWAV_RW(SDL_RWFromMem(&mem, mem ## _len), 1)
-    sounds[SoundPlayer::LOAD] = LoadWAVFromMem(resource_load_wav);
-    sounds[SoundPlayer::SHOT] = LoadWAVFromMem(resource_shot_wav);
-    sounds[SoundPlayer::FLAP] = LoadWAVFromMem(resource_flap_wav);
-    sounds[SoundPlayer::DROP] = LoadWAVFromMem(resource_flap_wav);
-    sounds[SoundPlayer::BEEP] = LoadWAVFromMem(resource_beep_wav);
-    sounds[SoundPlayer::END] = LoadWAVFromMem(resource_end_wav);
-    sounds[SoundPlayer::DAMN] = 0; // not used
-    sounds[SoundPlayer::LAUGH] = 0; // not used
-    sounds[SoundPlayer::WTF] = 0; // not used
-    sounds[SoundPlayer::DAMN0] = LoadWAVFromMem(resource_damn0_wav);
-    sounds[SoundPlayer::DAMN1] = LoadWAVFromMem(resource_damn1_wav);
-    sounds[SoundPlayer::LAUGH0] = LoadWAVFromMem(resource_laugh0_wav);
-    sounds[SoundPlayer::LAUGH1] = LoadWAVFromMem(resource_laugh1_wav);
-    sounds[SoundPlayer::WTF0] = LoadWAVFromMem(resource_wtf0_wav);
-    sounds[SoundPlayer::WTF1] = LoadWAVFromMem(resource_wtf1_wav);
-
-    music = Mix_LoadMUS_RW(SDL_RWFromMem(&resource_baalcrap_it, resource_baalcrap_it_len));
+    memset(sounds, 0, sizeof(sounds));
 }
 
-SoundPlayer::SoundPlayer()
-    : impl(new SoundPlayerImpl)
+SoundPlayerImpl::SoundPlayerImpl()
+    : priv(new SoundPlayerImplPriv())
 {
+    Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096);
+}
+
+SoundPlayerImpl::~SoundPlayerImpl()
+{
+    delete priv;
 }
 
 void
-SoundPlayer::play(SoundEffect sound, float position)
+SoundPlayerImpl::load(enum SoundPlayer::SoundEffect effect,
+                      const char *data, size_t size)
 {
-    static int pseudorandom = 0;
+    priv->sounds[effect] = Mix_LoadWAV_RW(SDL_RWFromConstMem(data, size), 1);
+}
 
-    if (!instance) {
-        instance = new SoundPlayer();
-    }
+void
+SoundPlayerImpl::load_music(const char *data, size_t size)
+{
+    priv->music = Mix_LoadMUS_RW(SDL_RWFromConstMem(data, size));
+}
 
+void
+SoundPlayerImpl::play(enum SoundPlayer::SoundEffect sound)
+{
     int channel = 0;
+
     /* Sounds which cannot be played at the same time must be played on
      * the same channel, so that if another sound from the same set is
      * playing, it gets stopped. */
-    if (sound == LOAD ||
-        sound == SHOT ||
-        sound == DAMN) {
-        channel = 1;
+    switch (sound) {
+        case SoundPlayer::LOAD:
+        case SoundPlayer::SHOT:
+            channel = 1;
+            break;
+        case SoundPlayer::WTF0:
+        case SoundPlayer::WTF1:
+            channel = 2;
+            break;
+        case SoundPlayer::DAMN0:
+        case SoundPlayer::DAMN1:
+            channel = 3;
+            break;
+        case SoundPlayer::LAUGH0:
+        case SoundPlayer::LAUGH1:
+            channel = 4;
+            break;
+        default:
+            channel = 0;
     }
 
-    pseudorandom++;
-    if (sound == WTF) {
-        sound = (pseudorandom % 2 == 0) ? WTF0 : WTF1;
-        channel = 2;
+    if (priv->sounds[sound]) {
+        Mix_PlayChannel(channel, priv->sounds[sound], 0);
     }
-    if (sound == DAMN) {
-        sound = (pseudorandom % 2 == 0) ? DAMN0 : DAMN1;
-        channel = 3;
-    }
-    if (sound == LAUGH) {
-        sound = (pseudorandom % 2 == 0) ? LAUGH0 : LAUGH1;
-        channel = 4;
-    }
-
-    Mix_PlayChannel(channel, instance->impl->sounds[sound], 0);
 }
 
 void
-SoundPlayer::startMusic()
+SoundPlayerImpl::music(bool playing)
 {
-    if (!instance) {
-        instance = new SoundPlayer();
-    }
-
-    Mix_PlayMusic(instance->impl->music, -1);
-}
-
-void
-SoundPlayer::stopMusic()
-{
-    if (instance) {
+    if (playing) {
+        Mix_PlayMusic(priv->music, -1);
+    } else {
         Mix_HaltMusic();
     }
 }

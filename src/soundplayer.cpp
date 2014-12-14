@@ -22,58 +22,80 @@
 
 #include <stdlib.h>
 
-SoundPlayer *
-SoundPlayer::instance = NULL;
+#define DECLARE_RESOURCE(name) \
+    extern char resource_ ## name[]; \
+    extern unsigned int resource_ ## name ##_len;
 
-#ifndef USE_SDL_MIXER
-/* Provide stub implementations */
+DECLARE_RESOURCE(shot_wav)
+DECLARE_RESOURCE(flap_wav)
+DECLARE_RESOURCE(load_wav)
+DECLARE_RESOURCE(beep_wav)
+DECLARE_RESOURCE(end_wav)
+DECLARE_RESOURCE(damn0_wav)
+DECLARE_RESOURCE(damn1_wav)
+DECLARE_RESOURCE(laugh0_wav)
+DECLARE_RESOURCE(laugh1_wav)
+DECLARE_RESOURCE(wtf0_wav)
+DECLARE_RESOURCE(wtf1_wav)
+DECLARE_RESOURCE(baalcrap_it)
 
-SoundPlayer::SoundPlayer()
-    : impl(0)
+
+static SoundPlayerImpl *
+impl()
 {
+    static SoundPlayerImpl *impl = 0;
+    if (!impl) {
+        impl = new SoundPlayerImpl();
+
+#define LOAD_SOUND(key, data) impl->load(key, data, data ## _len)
+        LOAD_SOUND(SoundPlayer::LOAD, resource_load_wav);
+        LOAD_SOUND(SoundPlayer::SHOT, resource_shot_wav);
+        LOAD_SOUND(SoundPlayer::FLAP, resource_flap_wav);
+        LOAD_SOUND(SoundPlayer::DROP, resource_flap_wav);
+        LOAD_SOUND(SoundPlayer::BEEP, resource_beep_wav);
+        LOAD_SOUND(SoundPlayer::END, resource_end_wav);
+        LOAD_SOUND(SoundPlayer::DAMN0, resource_damn0_wav);
+        LOAD_SOUND(SoundPlayer::DAMN1, resource_damn1_wav);
+        LOAD_SOUND(SoundPlayer::LAUGH0, resource_laugh0_wav);
+        LOAD_SOUND(SoundPlayer::LAUGH1, resource_laugh1_wav);
+        LOAD_SOUND(SoundPlayer::WTF0, resource_wtf0_wav);
+        LOAD_SOUND(SoundPlayer::WTF1, resource_wtf1_wav);
+#undef LOAD_SOUND
+        impl->load_music(resource_baalcrap_it, resource_baalcrap_it_len);
+    }
+
+    return impl;
 }
 
 void
 SoundPlayer::play(SoundEffect sound, float position)
 {
-    if (!instance) {
-        instance = new SoundPlayer();
+    static int pseudorandom = 0;
+    pseudorandom++;
+
+    if (sound == WTF) {
+        sound = (pseudorandom % 2 == 0) ? WTF0 : WTF1;
     }
 
-    /* TODO: Randomize */
-    if (sound == WTF) sound = WTF0;
-    if (sound == DAMN) sound = DAMN0;
-    if (sound == LAUGH) sound = LAUGH0;
+    if (sound == DAMN) {
+        sound = (pseudorandom % 2 == 0) ? DAMN0 : DAMN1;
+    }
 
-    /* TODO: Play sound */
+    if (sound == LAUGH) {
+        sound = (pseudorandom % 2 == 0) ? LAUGH0 : LAUGH1;
+    }
+
+    impl()->play(sound);
 }
 
 void
 SoundPlayer::startMusic()
 {
-    if (!instance) {
-        instance = new SoundPlayer();
-    }
-
-    /* TODO: Play music */
+    impl()->music(true);
 }
 
 void
 SoundPlayer::stopMusic()
 {
-    if (instance) {
-        /* TODO: Stop music */
-    }
-}
-
-#endif // USE_SDL_MIXER
-
-SoundPlayer*
-SoundPlayer::getInstance()
-{
-    if (!instance) {
-        instance = new SoundPlayer();
-    }
-
-    return instance;
+    impl()->music(false);
 }
