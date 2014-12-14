@@ -1,7 +1,7 @@
 
 /**
  * That Rabbit Game 2: Stone Age Rabbit Hunt
- * Copyright (C) 2010, 2011, 2012, 2013 Thomas Perl <m@thp.io>
+ * Copyright (C) 2014 Thomas Perl <m@thp.io>
  * http://thp.io/2011/trg2/
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,38 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-#ifndef TRG_MENU_H
-#define TRG_MENU_H
+#ifndef TRG_CREDITS_H
+#define TRG_CREDITS_H
 
 #include "spritecontainer.h"
-#include "texture.h"
-#include "font.h"
-#include "credits.h"
+#include "text.h"
 
 
-class Menu : public SpriteContainer
+class Credits : public SpriteContainer
 {
-    private:
-        Font *font;
-        int width;
-        int height;
-
-        Sprite *that;
-        Sprite *rabbit;
-        Sprite *game;
-        Sprite *two;
-
-        Sprite *flyButton;
-        Sprite *url;
-
-        Credits *credits;
-
     public:
-        Menu(Texture *texture, int width, int height);
-        void setOpacity(float opacity);
+        Credits(int width, int height);
+        virtual void onBeforeDraw();
 
-    protected:
-        void onAfterDraw();
+    private:
+        int m_width;
+        int m_height;
+        Text m_text;
+        int m_current_line;
+        int m_current_step;
+        int m_current_frame;
 };
 
-#endif /* TRG_MENU_H */
+#endif /* TRG_CREDITS_H */

@@ -34,6 +34,7 @@ Menu::Menu(Texture *texture, int width, int height)
     , two(new Sprite(TextureParts::makeTwo(texture)))
     , flyButton(new Sprite(TextureParts::makeFlyButton(texture)))
     , url(new Sprite(TextureParts::makeURL(texture)))
+    , credits(new Credits(width, height))
 {
     // TODO: Save and restore the high scores from disk
     font->setSeconds(78);
@@ -57,6 +58,8 @@ Menu::Menu(Texture *texture, int width, int height)
     url->setPosition(width/2, height - 30);
     url->setCenter(url->getWidth()/2, url->getHeight());
     addChildBack(url);
+
+    addChildFront(credits);
 }
 
 void
@@ -78,4 +81,5 @@ Menu::setOpacity(float opacity)
     flyButton->setOpacity(opacity);
     url->setOpacity(opacity);
     font->setOpacity(opacity);
+    credits->setOpacity(opacity);
 }
