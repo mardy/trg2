@@ -61,7 +61,11 @@ SoundPlayerImpl::load(enum SoundPlayer::SoundEffect effect,
 void
 SoundPlayerImpl::load_music(const char *data, size_t size)
 {
-    priv->music = Mix_LoadMUS_RW(SDL_RWFromConstMem(data, size));
+    priv->music = Mix_LoadMUS_RW(SDL_RWFromConstMem(data, size)
+#ifdef TRG_USE_SDL2
+                                 , 1
+#endif
+                                 );
 }
 
 void

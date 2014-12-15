@@ -18,10 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
+#ifdef TRG_USE_SDL2
+
 #include "rabbitgame.h"
 #include "stereo.h"
-
-#if !defined(ANDROID) && !defined(TRG_USE_SDL2)
 
 #include "SDL.h"
 
@@ -35,12 +35,9 @@ main(int argc, char *argv[])
     for (int i=1; i<argc; i++) {
         if (strcmp(argv[i], "--stereo") == 0) {
             stereo_enabled = true;
-        } else if (strcmp(argv[i], "--anaglyph") == 0) {
-            stereo_anaglyph = true;
         } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-            fprintf(stderr, "Usage: %s [--stereo|--anaglyph]\n\n", argv[0]);
+            fprintf(stderr, "Usage: %s [--stereo]\n\n", argv[0]);
             fprintf(stderr, "    --stereo ...... Render in side-by-side stereo 3D\n");
-            fprintf(stderr, "    --anaglyph .... Render in anaglyph stereo 3D\n");
             return 1;
         }
     }
@@ -50,10 +47,17 @@ main(int argc, char *argv[])
         return 1;
     }
 
-    SDL_Surface *s = SDL_SetVideoMode(854, 480, 0, SDL_OPENGL);
+    SDL_Window *w = SDL_CreateWindow("That Rabbit Game 2",
+                                     SDL_WINDOWPOS_UNDEFINED,
+                                     SDL_WINDOWPOS_UNDEFINED,
+                                     854, 480, SDL_WINDOW_OPENGL);
+    SDL_GL_CreateContext(w);
+
+    int width, height;
+    SDL_GetWindowSize(w, &width, &height);
 
     RabbitGame game;
-    game.resize(s->w, s->h);
+    game.resize(width, height);
 
     SDL_Event event;
     while (true) {
@@ -83,11 +87,11 @@ main(int argc, char *argv[])
         }
 
         game.render();
-        SDL_GL_SwapBuffers();
+        SDL_GL_SwapWindow(w);
     }
 
 quit:
     return 0;
 }
 
-#endif /* !ANDROID && !SDL2 */
+#endif /* TRG_USE_SDL2 */

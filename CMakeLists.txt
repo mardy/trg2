@@ -58,11 +58,6 @@ foreach(sound ${SOUNDS})
     list(APPEND SOURCES "${CMAKE_CURRENT_BINARY_DIR}/${resource}")
 endforeach()
 
-# We need SDL 1.2 for this to build
-find_package(SDL REQUIRED)
-include_directories(${SDL_INCLUDE_DIR})
-
-
 # Platform-specific build of the main executable
 IF(APPLE)
     find_library(FOUNDATION Foundation REQUIRED)
@@ -70,17 +65,38 @@ IF(APPLE)
     mark_as_advanced(FOUNDATION OPENGL)
 
     add_executable(trg2 MACOSX_BUNDLE ${SOURCES})
-    target_link_libraries(trg2 ${SDL_LIBRARY} ${FOUNDATION} ${OPENGL})
+    target_link_libraries(trg2 ${FOUNDATION} ${OPENGL})
 ELSE()
     find_library(OPENGL GL REQUIRED)
 
     add_executable(trg2 ${SOURCES})
-    target_link_libraries(trg2 ${SDL_LIBRARY} ${OPENGL})
+    target_link_libraries(trg2 ${OPENGL})
 ENDIF()
 
-find_package(SDL_mixer)
-IF(SDL_MIXER_FOUND)
-    include_directories(${SDL_MIXER_INCLUDE_DIRS})
-    target_link_libraries(trg2 ${SDL_MIXER_LIBRARIES})
-    add_definitions(-DUSE_SDL_MIXER)
+# We need SDL for this to build; first, check if SDL 2.0 is available
+include(FindPkgConfig)
+pkg_search_module(SDL2 sdl2)
+IF(SDL2_FOUND)
+    include_directories(${SDL2_INCLUDE_DIRS})
+    target_link_libraries(trg2 ${SDL2_LIBRARIES})
+    add_definitions(-DTRG_USE_SDL2)
+
+    pkg_search_module(SDL2_MIXER SDL2_mixer)
+    If(SDL2_MIXER_FOUND)
+        include_directories(${SDL2_MIXER_INCLUDE_DIRS})
+        target_link_libraries(trg2 ${SDL2_MIXER_LIBRARIES})
+        add_definitions(-DUSE_SDL_MIXER)
+    ENDIF()
+ELSE()
+    # fallback to SDL 1.2
+    find_package(SDL REQUIRED)
+    include_directories(${SDL_INCLUDE_DIR})
+    target_link_libraries(trg2 ${SDL_LIBRARY})
+
+    find_package(SDL_mixer)
+    IF(SDL_MIXER_FOUND)
+        include_directories(${SDL_MIXER_INCLUDE_DIRS})
+        target_link_libraries(trg2 ${SDL_MIXER_LIBRARIES})
+        add_definitions(-DUSE_SDL_MIXER)
+    ENDIF()
 ENDIF()
