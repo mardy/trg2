@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=That Raggit Game 2
+Comment=My project description
+Exec=trg2
+Icon=account-tester.svg
+Terminal=false
+Type=Application
+
