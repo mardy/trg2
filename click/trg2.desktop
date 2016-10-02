@@ -1,8 +1,9 @@
 [Desktop Entry]
-Name=That Raggit Game 2
-Comment=My project description
+Name=That Rabbit Game 2
+Comment=That Rabbit Game 2
 Exec=trg2
 Icon=account-tester.svg
 Terminal=false
 Type=Application
+X-Ubuntu-Touch=true
 

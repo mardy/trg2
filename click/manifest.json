@@ -1,6 +1,6 @@
 {
     "description": "That Rabbit Game 2",
-    "framework": "ubuntu-sdk-14.10",
+    "framework": "ubuntu-sdk-15.04",
     "hooks": {
         "trg2": {
             "apparmor": "trg2.json",
@@ -10,6 +10,7 @@
     "maintainer": "Alberto Mardegan <info@mardy.it>",
     "name": "it.mardy.trg2",
     "title": "That Rabbit Game 2",
+    "architecture": "armhf",
     "version": "0.1"
 }
 

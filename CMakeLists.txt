@@ -73,6 +73,9 @@ ELSE()
     target_link_libraries(trg2 ${OPENGL})
 ENDIF()
 
+find_library(M_LIB m)
+target_link_libraries(trg2 ${M_LIB})
+
 # We need SDL for this to build; first, check if SDL 2.0 is available
 include(FindPkgConfig)
 pkg_search_module(SDL2 sdl2)
@@ -100,3 +103,6 @@ ELSE()
         add_definitions(-DUSE_SDL_MIXER)
     ENDIF()
 ENDIF()
+
+set_target_properties(trg2 PROPERTIES LINKER_LANGUAGE CXX)
+
