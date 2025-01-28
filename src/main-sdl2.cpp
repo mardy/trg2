@@ -24,7 +24,7 @@
 #include "stereo.h"
 
 #include "SDL.h"
-
+#include <ctime>
 
 int
 main(int argc, char *argv[])
