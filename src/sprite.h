@@ -143,12 +143,12 @@ public:
         return this->y;
     }
 
-    float setWidth(float width) {
+    void setWidth(float width) {
         this->width = width;
         recalculateVtxCoords();
     }
 
-    float setHeight(float height) {
+    void setHeight(float height) {
         this->height = height;
         recalculateVtxCoords();
     }

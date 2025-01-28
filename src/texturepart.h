@@ -52,7 +52,7 @@ public:
 
     ~TexturePart();
 
-    float setWidth(float width) {
+    void setWidth(float width) {
         this->width = width;
         if (x2 > x1) {
             x2 = x1 + width;
@@ -62,7 +62,7 @@ public:
         recalculateTexCoords();
     }
 
-    float setHeight(float height) {
+    void setHeight(float height) {
         this->height = height;
         if (y2 > y1) {
             y2 = y1 + height;

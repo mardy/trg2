@@ -55,7 +55,7 @@ class Animation
         virtual void setValue(float value) = 0;
 
     private:
-        float updateValue(float value) {
+        void updateValue(float value) {
             setValue(easeValue(scaleValue(value)));
         }
 
