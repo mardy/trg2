@@ -47,10 +47,14 @@ main(int argc, char *argv[])
         return 1;
     }
 
+    int flags = SDL_WINDOW_OPENGL;
+#if defined(__wii__) || defined(__gamecube__)
+    flags |= SDL_WINDOW_FULLSCREEN;
+#endif
     SDL_Window *w = SDL_CreateWindow("That Rabbit Game 2",
                                      SDL_WINDOWPOS_UNDEFINED,
                                      SDL_WINDOWPOS_UNDEFINED,
-                                     854, 480, SDL_WINDOW_OPENGL);
+                                     854, 480, flags);
     SDL_GL_CreateContext(w);
 
     int width, height;
