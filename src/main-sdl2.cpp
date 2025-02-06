@@ -42,7 +42,7 @@ main(int argc, char *argv[])
         }
     }
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_GAMECONTROLLER) != 0) {
         fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
         return 1;
     }
@@ -84,10 +84,41 @@ main(int argc, char *argv[])
                     default: break;
                 }
                 game.key((event.type == SDL_KEYDOWN)?KEY_DOWN:KEY_UP, key);
+            } else if (event.type == SDL_JOYDEVICEADDED) {
+                if (SDL_IsGameController(event.jdevice.which)) {
+                    SDL_GameController *controller = SDL_GameControllerOpen(event.jdevice.which);
+                    if (SDL_GameControllerHasSensor(controller, SDL_SENSOR_ACCEL)) {
+                        SDL_GameControllerSetSensorEnabled(controller, SDL_SENSOR_ACCEL, SDL_TRUE);
+                    }
+                } else {
+                    SDL_JoystickOpen(event.jdevice.which);
+                }
+            } else if (event.type == SDL_JOYHATMOTION) {
+                static Uint8 old = SDL_HAT_CENTERED;
+                Uint8 changed = event.jhat.value ^ old;
+                if (changed & SDL_HAT_LEFT)
+                    game.key(event.jhat.value & SDL_HAT_LEFT ? KEY_DOWN:KEY_UP, K_LEFT);
+                if (changed & SDL_HAT_RIGHT)
+                    game.key(event.jhat.value & SDL_HAT_RIGHT ? KEY_DOWN:KEY_UP, K_RIGHT);
+                if (changed & SDL_HAT_UP)
+                    game.key(event.jhat.value & SDL_HAT_UP ? KEY_DOWN:KEY_UP, K_UP);
+                if (changed & SDL_HAT_DOWN)
+                    game.key(event.jhat.value & SDL_HAT_DOWN ? KEY_DOWN:KEY_UP, K_DOWN);
+                old = event.jhat.value;
+            } else if (event.type == SDL_CONTROLLERBUTTONDOWN) {
+                if (event.cbutton.button == SDL_CONTROLLER_BUTTON_BACK ||
+                    event.cbutton.button == SDL_CONTROLLER_BUTTON_START) {
+                    goto quit;
+                }
+                game.touch(TOUCH_DOWN, 0, 0, 0);
+            } else if (event.type == SDL_CONTROLLERBUTTONUP) {
+                game.touch(TOUCH_UP, 0, 0, 0);
+            } else if (event.type == SDL_CONTROLLERSENSORUPDATE &&
+                       event.csensor.sensor == SDL_SENSOR_ACCEL) {
+                /* This works for the wiimote, hopefully is correct for other
+                 * accelerometers, too */
+                game.accelerometer(0, event.csensor.data[2], 0);
             }
-
-            // TODO: Implement gamepad (analog stick) support again
-            //game.accelerometer(-1., 0., 0.);
         }
 
         game.render();
